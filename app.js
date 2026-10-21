@@ -89,15 +89,40 @@
     $("#weekly").innerHTML = html || `<p class="empty">No weekly sessions in this category.</p>`;
   }
 
-  function renderMonths() {
-    const list = data.months.filter(showPlan);
-    let html = "", lastMon = "";
+  // Monday (yyyy-mm-dd, Berlin) of the week an ISO time falls in.
+  function weekOf(iso) {
+    const d = new Date(key(new Date(iso)) + "T12:00:00");
+    d.setDate(d.getDate() - ((d.getDay() + 6) % 7));
+    return key(d);
+  }
+  const RANK = { pick: 3, premiere: 2, opening: 1 };
+  const weight = (c) => Math.max(0, ...(c.badges || []).map((b) => RANK[b] || 0));
+  const better = (a, b) => a.score - b.score || weight(a) - weight(b) || b.start.localeCompare(a.start);
+
+  // "All": one highlight per category per week (plus your picks and what's running now).
+  function highlights(list) {
+    const keep = [], best = {};
     for (const c of list) {
-      const m = c.running ? "Running now" : fMon.format(new Date(c.start));
-      if (m !== lastMon) { html += `<div class="mon">${esc(m)}</div>`; lastMon = m; }
+      if (c.running || (c.badges || []).includes("pick")) { keep.push(c); continue; }
+      const k = weekOf(c.start) + "|" + c.cat;
+      if (!best[k] || better(c, best[k]) > 0) best[k] = c;
+    }
+    return keep.concat(Object.values(best))
+      .sort((a, b) => (b.running === true) - (a.running === true) || a.start.localeCompare(b.start));
+  }
+
+  function renderMonths() {
+    const hi = cat === "all";
+    const list = hi ? highlights(data.months) : data.months.filter(showPlan);
+    let html = hi ? `<p class="hint">Highlights: the best of each category per week. Tap a chip to see everything.</p>` : "";
+    let last = "";
+    for (const c of list) {
+      const g = c.running ? "Running now"
+        : hi ? `Week of ${fLong.format(new Date(weekOf(c.start) + "T12:00:00"))}` : fMon.format(new Date(c.start));
+      if (g !== last) { html += `<div class="mon">${esc(g)}</div>`; last = g; }
       html += card(c);
     }
-    $("#months").innerHTML = html || `<p class="empty">Nothing in this category yet.</p>`;
+    $("#months").innerHTML = list.length ? html : `<p class="empty">Nothing in this category yet.</p>`;
   }
 
   function renderCal() {
