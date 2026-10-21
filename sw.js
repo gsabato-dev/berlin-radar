@@ -1,5 +1,5 @@
 // Network first, cache as offline fallback — so a fresh Monday build always wins.
-const CACHE = "radar-v5";
+const CACHE = "radar-v6";
 const SHELL = ["./", "index.html", "style.css", "app.js", "events.json", "manifest.webmanifest", "icon-180.png", "icon.svg"];
 
 self.addEventListener("install", (e) => {
