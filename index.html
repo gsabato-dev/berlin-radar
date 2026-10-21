@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Berlin Radar</title>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self' https://api.github.com; manifest-src 'self'; worker-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="What's on in Berlin this week and the next two months.">
+<meta name="theme-color" content="#F4F1EC" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#17191C" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Radar">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Berlin</h1>
+    <p class="sub" id="sub">Loading…</p>
+  </header>
+
+  <nav class="chips" id="chips" aria-label="Categories"></nav>
+
+  <section id="s-week">
+    <h2>This week <small id="week-range"></small></h2>
+    <div id="week"></div>
+  </section>
+
+  <section id="s-weekly">
+    <h2>Every week <small>jams, open mics &amp; milongas</small></h2>
+    <div id="weekly"></div>
+  </section>
+
+  <section id="s-months">
+    <h2>Next 2 months
+      <span class="seg" role="group" aria-label="View">
+        <button type="button" data-v="list" aria-pressed="true">List</button>
+        <button type="button" data-v="cal" aria-pressed="false">Calendar</button>
+      </span>
+    </h2>
+    <div id="months"></div>
+    <div id="cal" hidden></div>
+  </section>
+
+  <footer>
+    <section class="addlink" id="addlink" hidden aria-labelledby="addlink-h">
+      <h3 id="addlink-h">Add to Radar
+        <span class="seg" role="group" aria-label="What to add">
+          <button type="button" data-f="group" aria-pressed="true">Group</button>
+          <button type="button" data-f="event" aria-pressed="false">Event</button>
+        </span>
+      </h3>
+      <form id="addlink-form" autocomplete="off" novalidate>
+        <input id="al-url" type="text" inputmode="url" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="https://www.meetup.com/…" aria-label="Group link">
+        <div class="row">
+          <select id="al-cat" aria-label="Chip">
+            <option value="">Chip: automatic</option>
+            <option value="italian">Italian</option><option value="jams">Jams</option>
+            <option value="sessions">Open mic</option><option value="classical">Classical</option>
+            <option value="theatre">Theatre</option><option value="shows">Shows</option>
+            <option value="art">Art</option><option value="meetups">Meetups</option>
+          </select>
+          <button type="submit" id="al-save">Save</button>
+        </div>
+      </form>
+      <form id="addevent-form" autocomplete="off" novalidate hidden>
+        <input id="ae-title" type="text" placeholder="What (e.g. 10-year anniversary, local artists)" aria-label="Event title">
+        <div class="row">
+          <input id="ae-date" type="date" aria-label="Date">
+          <input id="ae-time" type="time" aria-label="Start time (optional)">
+        </div>
+        <input id="ae-venue" type="text" placeholder="Where (e.g. Laksmi Bar)" aria-label="Venue" class="gap">
+        <input id="ae-url" type="text" inputmode="url" autocapitalize="off" autocorrect="off" spellcheck="false"
+               placeholder="Link (Instagram post, website…), optional" aria-label="Link" class="gap">
+        <div class="row">
+          <select id="ae-cat" aria-label="Chip">
+            <option value="">Chip: automatic</option>
+            <option value="italian">Italian</option><option value="jams">Jams</option>
+            <option value="sessions">Open mic</option><option value="classical">Classical</option>
+            <option value="theatre">Theatre</option><option value="shows">Shows</option>
+            <option value="art">Art</option><option value="meetups">Meetups</option>
+          </select>
+          <button type="submit" id="ae-save">Save</button>
+        </div>
+      </form>
+      <p class="msg" id="al-msg" role="status" aria-live="polite"></p>
+      <details class="setup" id="al-setup">
+        <summary id="al-setup-sum">Set up saving (once per device)</summary>
+        <ol>
+          <li>In Safari, open <a id="al-newkey" href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">GitHub → new fine-grained token</a>.</li>
+          <li>Name it “Berlin Radar”, expiration up to 1 year. <b>Repository access</b>: only <span id="al-repo">the settings repo</span>.</li>
+          <li><b>Permissions</b>: Contents → Read and write, Actions → Read and write. Generate and copy it.</li>
+          <li>Paste it here. It is kept only on this device.</li>
+        </ol>
+        <form id="al-keyform" autocomplete="off">
+          <input id="al-key" type="password" placeholder="github_pat_…" aria-label="GitHub key" autocomplete="off" spellcheck="false">
+          <div class="row"><button type="submit">Save key</button><button type="button" id="al-forget" class="ghost">Forget key</button></div>
+        </form>
+      </details>
+    </section>
+    <p class="edit" id="edit-links" hidden></p>
+    <p class="fine" id="edit-hint" hidden>These open GitHub in Safari. Sign in there as gsabato-dev once; otherwise GitHub shows “Page not found”.</p>
+    <details id="health"><summary id="health-sum">Sources</summary><ul id="health-list"></ul></details>
+    <p class="fine" id="stamp"></p>
+  </footer>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
